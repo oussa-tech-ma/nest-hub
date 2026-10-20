@@ -20,6 +20,12 @@ button{transition:background-color 140ms ease}button:active:not(:disabled){filte
 [data-theme=dark] .card-light .value{color:#e6b359}[data-theme=dark] .card-calendar .calendar-date{color:#8dbbdd}[data-theme=dark] .photo-source-row .source-art{background:#3b484d}[data-theme=dark] .source-label{color:#e8eaed}[data-theme=dark] .quick-item>span{background:transparent}[data-theme=dark] .quick-item.on>span{background:#384e70}
 @media(prefers-reduced-motion:reduce){.saver-photo,.saver-tools,.widget{transition:none!important}}
 .reduce-motion .saver-photo,.reduce-motion .saver-tools,.reduce-motion .widget{transition:none!important}
+/* iPad full-bleed: match the actual visible aspect ratio, no 16:9 letterboxing */
+html,body,#viewport,#bounds,#hub{background:var(--paper)}
+#viewport{display:block;padding:0;margin:0;overflow:hidden}
+#bounds{margin:0;transform-origin:top left}
+#hub{min-height:100%;overscroll-behavior:none}
+@supports(height:100dvh){html,body{height:100dvh}}
 </style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><style id="music-keyboard-fix">
 /* Focused music/search update: the gallery, widgets and original navigation stay unchanged. */
 .card-music{background:linear-gradient(145deg,#444a67,#55566f 65%,#626075)}
@@ -199,7 +205,7 @@ function applyPrefs(){
  document.querySelector('meta[name=theme-color]').content=dark?'#202124':'#f8f9fa';
  if(U.saver)updateSaverMeta();
 }
-function layout(){const vv=window.visualViewport,useVisual=vv&&Math.abs(vv.scale-1)<.05,w=useVisual?vv.width:window.innerWidth,h=useVisual?vv.height:window.innerHeight,portrait=window.innerHeight>window.innerWidth;const viewport=$('#viewport');viewport.style.inset='auto';viewport.style.left=(useVisual?vv.offsetLeft:0)+'px';viewport.style.top=(useVisual?vv.offsetTop:0)+'px';viewport.style.width=w+'px';viewport.style.height=h+'px';U.w=portrait?768:1024;U.h=portrait?Math.max(880,h/(w/768)):600;U.scale=Math.min(w/U.w,h/U.h);const b=$('#bounds'),hub=$('#hub');b.style.width=U.w*U.scale+'px';b.style.height=U.h*U.scale+'px';hub.style.transform=`scale(${U.scale})`;hub.classList.toggle('portrait',portrait);hub.style.setProperty('--w',U.w+'px');hub.style.setProperty('--h',U.h+'px');hub.style.setProperty('--gallery-h',(portrait?650:472)+'px');hub.style.setProperty('--unit',(portrait?317:228)+'px');if(portrait){hub.style.setProperty('--unit','317px')}applyPrefs()}
+function layout(){const vv=window.visualViewport,useVisual=vv&&Math.abs(vv.scale-1)<.05,w=useVisual?vv.width:window.innerWidth,h=useVisual?vv.height:window.innerHeight,portrait=window.innerHeight>window.innerWidth;const viewport=$('#viewport');viewport.style.inset='auto';viewport.style.left=(useVisual?vv.offsetLeft:0)+'px';viewport.style.top=(useVisual?vv.offsetTop:0)+'px';viewport.style.width=w+'px';viewport.style.height=h+'px';U.w=portrait?768:1024;U.h=h/(w/U.w);U.scale=w/U.w;const b=$('#bounds'),hub=$('#hub');b.style.width=U.w*U.scale+'px';b.style.height=U.h*U.scale+'px';hub.style.transform=`scale(${U.scale})`;hub.classList.toggle('portrait',portrait);hub.style.setProperty('--w',U.w+'px');hub.style.setProperty('--h',U.h+'px');hub.style.setProperty('--gallery-h',Math.max(360,U.h-(portrait?170:135))+'px');hub.style.setProperty('--unit',(portrait?317:228)+'px');if(portrait){hub.style.setProperty('--unit','317px')}applyPrefs()}
 const TAB=[['today',''],['home','Maison connectée'],['media','Médias'],['communicate','Communiquer'],['discover','Découvrir'],['wellness','Bien-être']];
 function renderTabs(){const nav=$('#tabs');nav.innerHTML=TAB.map(([id,title])=>`<button role="tab" aria-selected="${U.tab===id}" class="tab ${U.tab===id?'active':''}" data-action="tab" data-id="${id}">${esc(title||moment())}</button>`).join('')}
 function anim(el,frames,opts={}){if(!el?.animate||S.prefs.reduced||matchMedia('(prefers-reduced-motion:reduce)').matches){return Promise.resolve()}const a=el.animate(frames,{duration:380,easing:'cubic-bezier(.2,0,0,1)',fill:'both',...opts});return a.finished.catch(()=>{}).then(()=>a.cancel())}
